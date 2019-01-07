@@ -28,3 +28,19 @@ give lable of item:pen,Quantity:1,Unit price:3000, letter state code:UT
    -----------------------------------------------------
    Total price                                     3115.5`
 ```
+
+Task3
+```
+give lable of item:pen,Quantity:1,Unit price:6000, letter state code:UT
+  when calculate
+  then output the recipe:
+  "pen     1   6000.00   6000.00
+   
+   -----------------------------------------------------
+   Total without taxes                            6000.00
+   Discount 3.00%                                 -300.00
+   Tax 6.85%                                      +411.00
+   
+   -----------------------------------------------------
+   Total price                                     6115.5`
+```
