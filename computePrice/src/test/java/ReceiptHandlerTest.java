@@ -67,4 +67,23 @@ public class ReceiptHandlerTest {
         + "Total price                                      6111.00\n";
     Assert.assertEquals(expectResult, result);
   }
+
+  @Test
+  public void should_return_right_receipt_when_given_item_is_pen_quantity_is_1_unit_price_is_6000_state_code_is_NV(){
+    ReceiptItem receiptItem = new ReceiptItem("pen", 1, 6000);
+
+    receiptHandler.setStateCode("NV");
+    String result = receiptHandler.generateReceipt(receiptItem);
+
+    String expectResult = "pen     1   6000.00   6000.00\n"
+        + "\n"
+        + "-----------------------------------------------------\n"
+        + "Total without taxes                               6000.00\n"
+        + "Discount 5.00%                                   -300.00\n"
+        + "Tax 8.00%                                        +480.00\n"
+        + "\n"
+        + "-----------------------------------------------------\n"
+        + "Total price                                      6180.00";
+    Assert.assertEquals(expectResult, result);
+  }
 }
