@@ -18,9 +18,25 @@ public class ReceiptHandler {
     double tax = 0;
     if (totalWithoutTaxes>1000){
       discout = 0.03;
+    }if(totalWithoutTaxes>5000){
+      discout = 0.05;
+    }if(totalWithoutTaxes>7000){
+      discout = 0.07;
+    }if (totalWithoutTaxes>10000){
+      discout = 0.10;
+    }if (totalWithoutTaxes>50000){
+      discout = 0.15;
     }
     if (stateCode.equals("UT")){
       tax = 0.0685;
+    } if (stateCode.equals("NV")){
+      tax = 0.08;
+    } if (stateCode.equals("TX")){
+      tax = 0.0625;
+    } if (stateCode.equals("AL")){
+      tax = 0.04;
+    }if (stateCode.equals("CA")){
+      tax = 0.0825;
     }
     double addMoneyWithTax = totalWithoutTaxes*tax;
     double reduceMoneyWithDiscount = totalWithoutTaxes*discout;
