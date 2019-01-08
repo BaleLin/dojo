@@ -1,5 +1,9 @@
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class ReceiptHandler {
   private String stateCode;
+  private ArrayList<ReceiptItem> receiptItemArray = new ArrayList();
 
   public String getStateCode() {
     return stateCode;
@@ -8,12 +12,29 @@ public class ReceiptHandler {
   public void setStateCode(String stateCode) {
     this.stateCode = stateCode;
   }
-  public String generateReceipt(ReceiptItem receiptItem){
+
+  public ArrayList<ReceiptItem> getReceiptItemArray() {
+    return receiptItemArray;
+  }
+
+  public void setReceiptItemArray(ArrayList<ReceiptItem> receiptItemArray) {
+    this.receiptItemArray = receiptItemArray;
+  }
+
+  public void addItem(ReceiptItem receiptItem){
+    this.receiptItemArray.add(receiptItem);
+  }
+  public String generateReceipt(){
+    double totalWithoutTaxes = 0;
     StringBuilder sb = new StringBuilder();
-    String itemName = receiptItem.getItemName();
-    int quantity = receiptItem.getQuantity();
-    double unitPrice = receiptItem.getUnitPrice();
-    double totalWithoutTaxes = quantity*unitPrice;
+    for (ReceiptItem receiptItem:receiptItemArray){
+      String itemName = receiptItem.getItemName();
+      int quantity = receiptItem.getQuantity();
+      double unitPrice = receiptItem.getUnitPrice();
+      double singleTotalPrice = quantity*unitPrice;
+      totalWithoutTaxes = totalWithoutTaxes + singleTotalPrice;
+      sb.append(String.format("%s     %d   %.2f   %.2f\n",itemName,quantity,unitPrice,singleTotalPrice));
+    }
     double discout = 0;
     double tax = 0;
     if (totalWithoutTaxes>1000){
@@ -41,7 +62,6 @@ public class ReceiptHandler {
     double addMoneyWithTax = totalWithoutTaxes*tax;
     double reduceMoneyWithDiscount = totalWithoutTaxes*discout;
     double actualPrice = totalWithoutTaxes+addMoneyWithTax-reduceMoneyWithDiscount;
-    sb.append(String.format("%s     %d   %.2f   %.2f\n",itemName,quantity,unitPrice,totalWithoutTaxes));
     sb.append("\n"+"-----------------------------------------------------"+"\n");
     sb.append(String.format("Total without taxes                               %.2f\n",totalWithoutTaxes));
     sb.append(String.format("Discount %.2f%%                                   -%.2f\n",discout*100,reduceMoneyWithDiscount));

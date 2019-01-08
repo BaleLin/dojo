@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,8 @@ public class ReceiptHandlerTest {
     ReceiptItem receiptItem = new ReceiptItem("pen", 1, 2.0);
 
     receiptHandler.setStateCode("UT");
-    String result = receiptHandler.generateReceipt(receiptItem);
+    receiptHandler.addItem(receiptItem);
+    String result = receiptHandler.generateReceipt();
 
     String expectResult = "pen     1   2.00   2.00\n"
         + "\n"
@@ -35,7 +37,8 @@ public class ReceiptHandlerTest {
     ReceiptItem receiptItem = new ReceiptItem("pen", 1, 3000);
 
     receiptHandler.setStateCode("UT");
-    String result = receiptHandler.generateReceipt(receiptItem);
+    receiptHandler.addItem(receiptItem);
+    String result = receiptHandler.generateReceipt();
 
     String expectResult = "pen     1   3000.00   3000.00\n"
         + "\n"
@@ -54,7 +57,8 @@ public class ReceiptHandlerTest {
     ReceiptItem receiptItem = new ReceiptItem("pen", 1, 6000);
 
     receiptHandler.setStateCode("UT");
-    String result = receiptHandler.generateReceipt(receiptItem);
+    receiptHandler.addItem(receiptItem);
+    String result = receiptHandler.generateReceipt();
 
     String expectResult = "pen     1   6000.00   6000.00\n"
         + "\n"
@@ -73,7 +77,8 @@ public class ReceiptHandlerTest {
     ReceiptItem receiptItem = new ReceiptItem("pen", 1, 6000);
 
     receiptHandler.setStateCode("NV");
-    String result = receiptHandler.generateReceipt(receiptItem);
+    receiptHandler.addItem(receiptItem);
+    String result = receiptHandler.generateReceipt();
 
     String expectResult = "pen     1   6000.00   6000.00\n"
         + "\n"
@@ -83,7 +88,30 @@ public class ReceiptHandlerTest {
         + "Tax 8.00%                                        +480.00\n"
         + "\n"
         + "-----------------------------------------------------\n"
-        + "Total price                                      6180.00";
+        + "Total price                                      6180.00\n";
+    Assert.assertEquals(expectResult, result);
+  }
+
+  @Test
+  public void should_return_right_receipt_when_given_more_items_and_state_code_is_NV(){
+    ReceiptItem receiptItem1 = new ReceiptItem("pen", 2, 6000);
+    ReceiptItem receiptItem2 = new ReceiptItem("mac", 1, 12000);
+
+    receiptHandler.setStateCode("NV");
+    receiptHandler.addItem(receiptItem1);
+    receiptHandler.addItem(receiptItem2);
+    String result = receiptHandler.generateReceipt();
+
+    String expectResult = "pen     2   6000.00   12000.00\n"
+        + "mac     1   12000.00   12000.00\n"
+        + "\n"
+        + "-----------------------------------------------------\n"
+        + "Total without taxes                               24000.00\n"
+        + "Discount 10.00%                                   -2400.00\n"
+        + "Tax 8.00%                                        +1920.00\n"
+        + "\n"
+        + "-----------------------------------------------------\n"
+        + "Total price                                      23520.00\n";
     Assert.assertEquals(expectResult, result);
   }
 }

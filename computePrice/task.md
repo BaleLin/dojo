@@ -60,3 +60,22 @@ give lable of item:pen,Quantity:1,Unit price:6000, letter state code:NV
    -----------------------------------------------------
    Total price                                    6180.00`
 ```
+
+Task5
+```
+  give lable of item:pen,Quantity:2,Unit price:6000 and 
+                     mac,Quantity:1,Unit price:12000,
+                     and letter state code:NV
+  when calculate
+  then output the recipe:
+  "pen     2   6000.00   12000.00
+   mac     1   12000.00  12000.00   
+   
+   -----------------------------------------------------
+   Total without taxes                            24000.00
+   Discount 10.00%                                -2400.00
+   Tax 8.00%                                      +1920.00
+   
+   -----------------------------------------------------
+   Total price                                    23520.00`
+```
