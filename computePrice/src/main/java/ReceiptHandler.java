@@ -2,13 +2,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class ReceiptHandler {
 
   private String stateCode;
   private List<ReceiptItem> receiptItemArray;
   private double totalWithoutTaxes;
-  private double discount = 0;
+  private double discountRate = 0;
   private double tax;
   private double addMoneyWithTax;
   private double reduceMoneyWithDiscount;
@@ -20,14 +21,18 @@ public class ReceiptHandler {
   private String formatActualPriceStatement;
   private StringBuilder sb;
   private Map<String, Double> stateCodeMap;
+  private Map<Double, Double> discountMap;
 
   public ReceiptHandler() {
     receiptItemArray = new ArrayList<ReceiptItem>();
     sb = new StringBuilder();
     stateCodeMap = new HashMap<String, Double>();
+    discountMap = new TreeMap<Double, Double>();
     initStateCode();
+    initDiscountMap();
     initFormatStatement();
   }
+
 
   private String getStateCode() {
     return stateCode;
@@ -69,30 +74,22 @@ public class ReceiptHandler {
   }
 
   private double calculateReduceMoney() {
-    getDiscount();
-    return totalWithoutTaxes * discount;
+    discountRate = getDiscountRate();
+    return totalWithoutTaxes * discountRate;
   }
 
   private double calculateActualPrice() {
     return totalWithoutTaxes + addMoneyWithTax - reduceMoneyWithDiscount;
   }
 
-  private void getDiscount() {
-    if (totalWithoutTaxes > 1000) {
-      discount = 0.03;
+  private double getDiscountRate() {
+    for (Double priceKey : discountMap.keySet()) {
+      if (totalWithoutTaxes < priceKey) {
+        return discountRate;
+      }
+      discountRate = discountMap.get(priceKey);
     }
-    if (totalWithoutTaxes > 5000) {
-      discount = 0.05;
-    }
-    if (totalWithoutTaxes > 7000) {
-      discount = 0.07;
-    }
-    if (totalWithoutTaxes > 10000) {
-      discount = 0.10;
-    }
-    if (totalWithoutTaxes > 50000) {
-      discount = 0.15;
-    }
+    return discountRate;
   }
 
   private double getTaxRate(String stateCode) {
@@ -115,6 +112,14 @@ public class ReceiptHandler {
     stateCodeMap.put("CA", 0.0825);
   }
 
+  private void initDiscountMap() {
+    discountMap.put(1000.00, 0.03);
+    discountMap.put(5000.00, 0.05);
+    discountMap.put(7000.00, 0.07);
+    discountMap.put(10000.00, 0.10);
+    discountMap.put(50000.00, 0.15);
+  }
+
   private void generateReceiptItemsInfo() {
     for (ReceiptItem receiptItem : receiptItemArray) {
       String itemName = receiptItem.getItemName();
@@ -129,7 +134,7 @@ public class ReceiptHandler {
   private void generateReceiptsInfo() {
     sb.append("\n" + "-----------------------------------------------------" + "\n");
     sb.append(String.format(formatTotalWithoutTaxesStatement, totalWithoutTaxes));
-    sb.append(String.format(formatDiscountStatement, discount * 100, reduceMoneyWithDiscount));
+    sb.append(String.format(formatDiscountStatement, discountRate * 100, reduceMoneyWithDiscount));
     sb.append(String.format(formatTaxStatement, tax * 100, addMoneyWithTax));
     sb.append("\n" + "-----------------------------------------------------" + "\n");
     sb.append(String.format(formatActualPriceStatement, actualPrice));
