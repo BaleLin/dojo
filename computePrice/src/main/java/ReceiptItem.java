@@ -32,4 +32,8 @@ public class ReceiptItem {
   public void setUnitPrice(double unitPrice) {
     this.unitPrice = unitPrice;
   }
+
+  public double getItemTotalPrice(){
+    return quantity*unitPrice;
+  }
 }

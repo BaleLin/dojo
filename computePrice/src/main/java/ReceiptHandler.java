@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +13,11 @@ public class ReceiptHandler {
   private double addMoneyWithTax;
   private double reduceMoneyWithDiscount;
   private double actualPrice;
+  private String formatItemsStatement;
+  private String formatTotalWithoutTaxesStatement;
+  private String formatDiscountStatement;
+  private String formatTaxStatement;
+  private String formatActualPriceStatement;
   private StringBuilder sb;
   private Map<String, Double> stateCodeMap;
 
@@ -22,6 +26,7 @@ public class ReceiptHandler {
     sb = new StringBuilder();
     stateCodeMap = new HashMap<String, Double>();
     initStateCode();
+    initFormatStatement();
   }
 
   private String getStateCode() {
@@ -40,22 +45,36 @@ public class ReceiptHandler {
     this.receiptItemArray = receiptItemArray;
   }
 
-  
+
   public void addItem(ReceiptItem receiptItem) {
     this.receiptItemArray.add(receiptItem);
   }
 
   public String generateReceipt() {
+    generateReceiptItemsInfo();
+    calculatePrice();
+    generateReceiptsInfo();
+    return sb.toString();
+  }
 
-    this.formatReceiptItem();
+  private void calculatePrice() {
     tax = getTaxRate(this.getStateCode());
     addMoneyWithTax = calculateAddMoney();
     reduceMoneyWithDiscount = calculateReduceMoney();
     actualPrice = calculateActualPrice();
+  }
 
-    this.formatReceiptsPrice();
+  private double calculateAddMoney() {
+    return totalWithoutTaxes * tax;
+  }
 
-    return sb.toString();
+  private double calculateReduceMoney() {
+    getDiscount();
+    return totalWithoutTaxes * discount;
+  }
+
+  private double calculateActualPrice() {
+    return totalWithoutTaxes + addMoneyWithTax - reduceMoneyWithDiscount;
   }
 
   private void getDiscount() {
@@ -76,21 +95,16 @@ public class ReceiptHandler {
     }
   }
 
-  private double calculateAddMoney() {
-    return totalWithoutTaxes * tax;
-  }
-
-  private double calculateReduceMoney() {
-    getDiscount();
-    return totalWithoutTaxes * discount;
-  }
-
-  private double calculateActualPrice() {
-    return totalWithoutTaxes + addMoneyWithTax - reduceMoneyWithDiscount;
-  }
-
   private double getTaxRate(String stateCode) {
     return stateCodeMap.get(stateCode);
+  }
+
+  private void initFormatStatement() {
+    formatItemsStatement = "%s     %d   %.2f   %.2f\n";
+    formatTotalWithoutTaxesStatement = "Total without taxes                               %.2f\n";
+    formatDiscountStatement = "Discount %.2f%%                                   -%.2f\n";
+    formatTaxStatement = "Tax %.2f%%                                        +%.2f\n";
+    formatActualPriceStatement = "Total price                                      %.2f\n";
   }
 
   private void initStateCode() {
@@ -101,24 +115,24 @@ public class ReceiptHandler {
     stateCodeMap.put("CA", 0.0825);
   }
 
-  private void formatReceiptItem() {
+  private void generateReceiptItemsInfo() {
     for (ReceiptItem receiptItem : receiptItemArray) {
       String itemName = receiptItem.getItemName();
       int quantity = receiptItem.getQuantity();
       double unitPrice = receiptItem.getUnitPrice();
-      double singleTotalPrice = quantity * unitPrice;
+      double singleTotalPrice = receiptItem.getItemTotalPrice();
       totalWithoutTaxes = totalWithoutTaxes + singleTotalPrice;
-      sb.append(String.format("%s     %d   %.2f   %.2f\n", itemName, quantity, unitPrice, singleTotalPrice));
+      sb.append(String.format(formatItemsStatement, itemName, quantity, unitPrice, singleTotalPrice));
     }
   }
 
-  private void formatReceiptsPrice() {
+  private void generateReceiptsInfo() {
     sb.append("\n" + "-----------------------------------------------------" + "\n");
-    sb.append(String.format("Total without taxes                               %.2f\n", totalWithoutTaxes));
-    sb.append(String.format("Discount %.2f%%                                   -%.2f\n", discount * 100, reduceMoneyWithDiscount));
-    sb.append(String.format("Tax %.2f%%                                        +%.2f\n", tax * 100, addMoneyWithTax));
+    sb.append(String.format(formatTotalWithoutTaxesStatement, totalWithoutTaxes));
+    sb.append(String.format(formatDiscountStatement, discount * 100, reduceMoneyWithDiscount));
+    sb.append(String.format(formatTaxStatement, tax * 100, addMoneyWithTax));
     sb.append("\n" + "-----------------------------------------------------" + "\n");
-    sb.append(String.format("Total price                                      %.2f\n", actualPrice));
+    sb.append(String.format(formatActualPriceStatement, actualPrice));
   }
 
 }
