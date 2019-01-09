@@ -64,16 +64,16 @@ public class ReceiptHandler {
 
   private void calculatePrice() {
     tax = getTaxRate(this.getStateCode());
-    addMoneyWithTax = calculateAddMoney();
-    reduceMoneyWithDiscount = calculateReduceMoney();
+    addMoneyWithTax = calculateAddMoneyWithTax();
+    reduceMoneyWithDiscount = calculateReduceMoneyWithDiscount();
     actualPrice = calculateActualPrice();
   }
 
-  private double calculateAddMoney() {
+  private double calculateAddMoneyWithTax() {
     return totalWithoutTaxes * tax;
   }
 
-  private double calculateReduceMoney() {
+  private double calculateReduceMoneyWithDiscount() {
     discountRate = getDiscountRate();
     return totalWithoutTaxes * discountRate;
   }
