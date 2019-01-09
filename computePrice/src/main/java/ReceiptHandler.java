@@ -7,15 +7,22 @@ import java.util.Map;
 public class ReceiptHandler {
 
   private String stateCode;
-  private List<ReceiptItem> receiptItemArray = new ArrayList<ReceiptItem>();
+  private List<ReceiptItem> receiptItemArray;
   private double totalWithoutTaxes;
   private double discount = 0;
   private double tax;
   private double addMoneyWithTax;
   private double reduceMoneyWithDiscount;
   private double actualPrice;
-  private StringBuilder sb = new StringBuilder();
-  private Map<String, Double> stateCodeMap = new HashMap<String, Double>();
+  private StringBuilder sb;
+  private Map<String, Double> stateCodeMap;
+
+  public ReceiptHandler() {
+    receiptItemArray = new ArrayList<ReceiptItem>();
+    sb = new StringBuilder();
+    stateCodeMap = new HashMap<String, Double>();
+    initStateCode();
+  }
 
   private String getStateCode() {
     return stateCode;
@@ -83,12 +90,15 @@ public class ReceiptHandler {
   }
 
   private double getTaxRate(String stateCode) {
+    return stateCodeMap.get(stateCode);
+  }
+
+  private void initStateCode() {
     stateCodeMap.put("UT", 0.0685);
     stateCodeMap.put("NV", 0.08);
     stateCodeMap.put("TX", 0.0625);
     stateCodeMap.put("AL", 0.04);
     stateCodeMap.put("CA", 0.0825);
-    return stateCodeMap.get(stateCode);
   }
 
   private void formatReceiptItem() {
