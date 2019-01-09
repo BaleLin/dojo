@@ -56,9 +56,9 @@ public class ReceiptHandler {
   }
 
   public String generateReceipt() {
-    generateReceiptItemsInfo();
+    generateItemsInfo();
     calculatePrice();
-    generateReceiptsInfo();
+    generateTotalPriceInfo();
     return sb.toString();
   }
 
@@ -120,7 +120,7 @@ public class ReceiptHandler {
     discountMap.put(50000.00, 0.15);
   }
 
-  private void generateReceiptItemsInfo() {
+  private void generateItemsInfo() {
     for (ReceiptItem receiptItem : receiptItemArray) {
       String itemName = receiptItem.getItemName();
       int quantity = receiptItem.getQuantity();
@@ -131,7 +131,7 @@ public class ReceiptHandler {
     }
   }
 
-  private void generateReceiptsInfo() {
+  private void generateTotalPriceInfo() {
     sb.append("\n" + "-----------------------------------------------------" + "\n");
     sb.append(String.format(formatTotalWithoutTaxesStatement, totalWithoutTaxes));
     sb.append(String.format(formatDiscountStatement, discountRate * 100, reduceMoneyWithDiscount));
